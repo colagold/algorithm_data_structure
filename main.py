@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 import networkx as nx
-from Node import TreeNode, Node
+from utils.Node import TreeNode, Node
 
 
 
