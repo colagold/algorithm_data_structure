@@ -91,7 +91,7 @@ ps:借别人的图一用，懒得画图
 - 在上述生成的子节点的基础上在做选择，因此[1,2]可做的选择只有[3]，生成了[1,2,3]。[1,3]的当前元素是3，3后面没有新的元素，所以不产生新的子集。
 ![](https://imgbed-1303886329.cos.ap-nanjing.myqcloud.com/20230621175526.png)
 
-**因此代码上需要通过下标来遍历，让下标一直往后移动，知道循环退出**
+**因此代码上需要通过下标来遍历，让下标一直往后移动，直到循环退出**
 
 ```python
 class Solution(object):
@@ -161,3 +161,147 @@ class Solution(object):
         backtrack(nums,0)
         return res
 ```
+
+### 元素可重不可复选
+#### 子集II
+
+力扣地址:[90.子集II](https://leetcode.cn/problems/subsets-ii/description/)
+
+**题目描述**
+
+给你一个整数数组 nums ，其中可能包含重复元素，请你返回该数组所有可能的子集（幂集）。 解集不能包含重复的子集。返回的解集中，子集可以按任意顺序排列。
+
+```text
+输入：nums = [1,2,2]
+输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+```
+
+**题目解释**
+
+ps：继续借图
+因为有重复元素，所以首先排序，让重复元素变成相邻的元素，再对其进行预剪枝。需要结合代码理解。
+- 剪枝有两个条件，`i>start and nums[i]==nums[i-1]`，其中`i>start`是保证不会删除如图所示的[1,2]后面的子节点[1,2,2]。`num[i]==num[i-1]`是需要在前置条件满足的情况下，剪去相邻重复树枝，而不剪去子节点
+
+![](https://imgbed-1303886329.cos.ap-nanjing.myqcloud.com/20230621193544.png)
+
+**代码**
+```python
+class Solution(object):
+    def subsetsWithDup(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        nums.sort()
+        res=[]
+        select=[]
+        def backtrack(nums,start):
+            res.append(select[:])
+            for i in range(start,len(nums)):
+                if i>start and nums[i]==nums[i-1]: #剪枝
+                    continue
+                select.append(nums[i])
+                backtrack(nums,i+1)
+                select.pop()
+        backtrack(nums,0)
+        return res
+```
+
+#### 组合总和II
+
+力扣地址：[组合总和II](https://leetcode.cn/problems/combination-sum-ii/description/)
+
+**题目描述**
+
+给定一个候选人编号的集合candidates和一个目标数target ，找出candidates中所有可以使数字和为target的组合。 candidates 中的每个数字在每个组合中只能使用 一次 。
+注意：解集不能包含重复的组合。 
+
+```text
+输入: candidates = [10,1,2,7,6,1,5], target = 8,
+输出:
+[
+[1,1,6],
+[1,2,5],
+[1,7],
+[2,6]
+]
+```
+
+**题目解释**
+
+该题中也是包含重复元素，只需要添加一个终止条件`sum(select)==target`即可。
+
+```python
+class Solution(object):
+    def combinationSum2(self, candidates, target):
+        """
+        :type candidates: List[int]
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        res=[]
+        select=[]
+        candidates.sort()
+        def backtrack(nums,start):
+            if sum(select)==target:
+                res.append(select[:])
+                return
+            if sum(select)>target:return
+            for i in range(start,len(nums)):
+                if i>start and nums[i]==nums[i-1]:
+                    continue
+                select.append(nums[i])
+                backtrack(nums,i+1)
+                select.pop()
+        backtrack(candidates,0)
+        return res
+```
+
+#### 全排列II
+ 
+力扣链接：[47. 全排列 II](https://leetcode.cn/problems/permutations-ii/description/)
+
+**题目描述**
+给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+
+```text
+输入：nums = [1,1,2]
+输出：
+[[1,1,2],
+ [1,2,1],
+ [2,1,1]]
+```
+
+**题目解释**
+
+该题要求全排列、生成的结果不重复。采取的方案是全排列+预剪枝。后剪枝比较耗时。
+
+```python
+class Solution(object):
+    def permuteUnique(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        res=[]
+        nums.sort()
+        select=[]
+        used=[0 for i in nums]
+        def backtrack(nums):
+            if len(select)==len(nums):
+                res.append(select[:])
+                return
+            for i in range(len(nums)):
+                if used[i]==1:
+                    continue
+                if i>0 and nums[i]==nums[i-1] and used[i-1]==1:
+                    continue
+                select.append(nums[i])
+                used[i]=1
+                backtrack(nums)
+                select.pop()
+                used[i]=0
+        backtrack(nums)
+        return res
+```
+
