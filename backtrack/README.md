@@ -68,7 +68,9 @@ def backtrack(选择列表,路径):
   - 进入for循环则进入选择阶段，对于第一个candidate(1)，先判断之前是否参与选择，如果没参与则会将1加入选择的列表，选择完后，再进入backtrack函数，进行1之后的元素选择【这个时候if判断就发挥作用了，candidate(1)将不会被选择，而去选择剩余元素】。
   - 当递归结束后，也就得到了排列为1开头的所有全排列。此时需要从选择里面删除1，进入下一个for循环，对2进行搜索。
 
-## 子集——元素无重不可复选
+### 元素无重不可复选
+#### 子集
+
 力扣地址：[78. 子集](https://leetcode.cn/problems/subsets/description/)
 
 **题目描述**
@@ -111,4 +113,51 @@ class Solution(object):
         return res
 ```
 
-### 元素无重不可复选(求组合)
+#### 组合
+力扣地址：[77.组合](https://leetcode.cn/problems/combinations/description/)
+
+**题目描述**
+
+给定两个整数n和k，返回范围[1, n]中所有可能的k个数的组合。 你可以按任何顺序返回答案。
+
+```text
+输入：n = 4, k = 2
+输出：
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+```
+
+**题目理解**
+
+该题与子集的不同之处就在于，对子集的长度进行了要求，因此我们只需要在求子集的基础上加上长度判断即可。
+
+核心思想依旧是将可选择列表当成有序的，只选择未被选择的元素
+
+```python
+class Solution(object):
+    def combine(self, n, k):
+        """
+        :type n: int
+        :type k: int
+        :rtype: List[List[int]]
+        """
+        res=[]
+        select=[]
+        nums=[i+1 for i in range(n)]
+        def backtrack(nums,start):
+            if len(select)==k:
+                res.append(select[:])
+                return
+            for i in range(start,n):
+                select.append(nums[i])
+                backtrack(nums,i+1)
+                select.pop()
+        backtrack(nums,0)
+        return res
+```
